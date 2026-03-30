@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bedarfsanalyse – ISH Gruppe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --dark:  #00364a;
+      --teal:  #00aaa2;
+      --teal2: #66ccc7;
+      --bg:    #f2f7f8;
+      --border:#cce0e5;
+      --text:  #00364a;
+      --muted: #4a6b7a;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    .site-header { background: #fff; border-bottom: 2px solid var(--teal2); padding: 16px 24px; }
+    .site-header img { height: 48px; display: block; }
+
+    .hero { background: var(--dark); color: #fff; padding: 56px 24px 48px; position: relative; overflow: hidden; }
+    .hero::before { content:''; position:absolute; right:-60px; top:-60px; width:280px; height:280px; background:rgba(0,170,162,.12); border-radius:48px; transform:rotate(20deg); }
+    .hero::after  { content:''; position:absolute; left:-40px; bottom:-80px; width:220px; height:220px; background:rgba(102,204,199,.08); border-radius:40px; transform:rotate(-15deg); }
+    .hero-inner { max-width: 720px; margin: 0 auto; position: relative; }
+    .hero h1 { font-family: 'Rubik', sans-serif; font-weight: 700; font-size: clamp(26px, 5vw, 40px); line-height: 1.15; margin-bottom: 16px; }
+    .hero p  { font-size: 16px; line-height: 1.7; opacity: .88; margin-bottom: 12px; }
+    .hero-email { font-size: 14px; opacity: .75; margin-top: 20px; }
+
+    .container { max-width: 720px; margin: 0 auto; padding: 32px 16px 64px; }
+
+    .success-wrap { display: none; padding: 48px 16px; text-align: center; }
+    .success-card { background: #fff; border-radius: 16px; padding: 48px 32px; box-shadow: 0 4px 24px rgba(0,54,74,.08); max-width: 480px; margin: 0 auto; }
+    .success-icon { width: 64px; height: 64px; background: var(--teal); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; }
+    .success-icon svg { width: 34px; height: 34px; }
+    .success-title { font-family: 'Rubik', sans-serif; font-size: 22px; font-weight: 700; color: var(--dark); margin-bottom: 12px; }
+    .success-text  { color: var(--muted); font-size: 15px; line-height: 1.6; }
+
+    .form-section { background: #fff; border-radius: 16px; padding: 28px 24px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,54,74,.06); position: relative; overflow: hidden; }
+    .deco { position:absolute; top:0; left:0; width:4px; height:100%; background: linear-gradient(180deg, var(--teal), var(--teal2)); border-radius:4px 0 0 4px; }
+    .sec-head { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
+    .sec-num  { width: 32px; height: 32px; background: var(--teal); color: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'Rubik', sans-serif; font-weight: 700; font-size: 15px; flex-shrink: 0; }
+    .sec-title { font-family: 'Rubik', sans-serif; font-weight: 700; font-size: 17px; color: var(--dark); }
+    .sec-opt { font-size: 13px; font-weight: 400; color: var(--muted); }
+
+    .subsec { margin-bottom: 20px; }
+    .subsec-label { font-family: 'Rubik', sans-serif; font-weight: 500; font-size: 14px; color: var(--teal); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 12px; }
+    .hr { height: 1px; background: var(--border); margin: 20px 0; }
+
+    .field { margin-bottom: 16px; }
+    .field-label { display: block; font-size: 14px; font-weight: 500; color: var(--dark); margin-bottom: 6px; }
+    .req { color: var(--teal); margin-left: 3px; }
+    .opt { color: var(--muted); font-weight: 400; font-size: 13px; }
+
+    input[type="text"], input[type="email"], input[type="tel"], input[type="url"], input[type="date"], input[type="number"], select, textarea {
+      width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 10px;
+      font-family: 'Inter', sans-serif; font-size: 14px; color: var(--text);
+      background: var(--bg); transition: border-color .2s, box-shadow .2s; outline: none;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(0,170,162,.12); }
+    textarea { resize: vertical; min-height: 90px; }
+
+    .radio-group { display: flex; flex-direction: column; gap: 8px; }
+    .radio-group.radio-inline { flex-direction: row; flex-wrap: wrap; gap: 8px; }
+    .radio-item, .cb-item {
+      display: flex; align-items: flex-start; gap: 10px; cursor: pointer;
+      background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px;
+      padding: 10px 14px; transition: border-color .2s, background .2s; font-size: 14px;
+    }
+    .radio-item:has(input:checked), .cb-item:has(input:checked) {
+      border-color: var(--teal); background: rgba(0,170,162,.06);
+    }
+    .radio-item input, .cb-item input { margin-top: 2px; accent-color: var(--teal); flex-shrink: 0; }
+
+    .cb-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+
+    /* Urgency cards */
+    .urgency-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .urgency-card { cursor: pointer; border: 1.5px solid var(--border); border-radius: 12px; padding: 14px; background: var(--bg); transition: border-color .2s, background .2s; }
+    .urgency-card:has(input:checked) { border-color: var(--teal); background: rgba(0,170,162,.06); }
+    .urgency-card input { display: none; }
+    .urgency-icon { font-size: 22px; margin-bottom: 6px; }
+    .urgency-label { font-size: 13px; font-weight: 500; color: var(--dark); line-height: 1.4; }
+
+    /* Theme cards */
+    .themen-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-bottom: 16px; }
+    .thema-card { cursor: pointer; border: 1.5px solid var(--border); border-radius: 12px; padding: 12px 14px; background: var(--bg); transition: border-color .2s, background .2s; display: flex; align-items: center; gap: 10px; }
+    .thema-card:has(input:checked) { border-color: var(--teal); background: rgba(0,170,162,.08); }
+    .thema-card input { display: none; }
+    .thema-card-label { font-size: 13px; font-weight: 500; color: var(--dark); line-height: 1.4; }
+
+    .schwerpunkte-box { display: none; background: rgba(0,170,162,.04); border: 1.5px solid var(--teal2); border-radius: 12px; padding: 16px; margin-top: 8px; }
+    .schwerpunkte-box.visible { display: block; }
+    .schwerpunkte-box .sp-title { font-size: 13px; font-weight: 600; color: var(--teal); margin-bottom: 10px; }
+    .schwerpunkte-box .cb-grid { grid-template-columns: 1fr; }
+
+    .cond { display: none; margin-top: 10px; }
+    .cond.visible { display: block; }
+
+    .submit-area { text-align: center; padding-top: 4px; }
+    .submit-btn { background: var(--teal); color: #fff; border: none; padding: 15px 52px; font-family: 'Rubik', sans-serif; font-weight: 700; font-size: 16px; border-radius: 12px; cursor: pointer; transition: background .2s, transform .12s, box-shadow .2s; letter-spacing: .02em; box-shadow: 0 4px 16px rgba(0,170,162,.3); }
+    .submit-btn:hover { background: #008d86; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,170,162,.35); }
+    .submit-btn:disabled { background: #9acac8; cursor: not-allowed; box-shadow: none; transform: none; }
+
+    .err-msg { color: #c0392b; background: #fdf0ef; border: 1px solid #f5c6c2; border-radius: 8px; padding: 12px 16px; font-size: 14px; margin-bottom: 16px; display: none; }
+
+    @media (max-width: 560px) {
+      .urgency-grid { grid-template-columns: 1fr; }
+      .themen-grid  { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <img src="/logo-ish.png" alt="ISH Gruppe">
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <h1>Bedarfsanalyse für Schulen</h1>
+    <p>Sie möchten Ihre Schule weiterentwickeln und suchen professionelle Begleitung? Beschreiben Sie uns Ihren Bedarf – wir melden uns zeitnah mit einem passgenauen Angebot.</p>
+    <p class="hero-email">Fragen? Schreiben Sie uns: <strong>office@ish-gruppe.de</strong></p>
+  </div>
+</section>
+
+<div class="container">
+
+  <div class="success-wrap" id="successWrap">
+    <div class="success-card">
+      <div class="success-icon">
+        <svg viewBox="0 0 34 34" fill="none"><path d="M7 17l7 9 14-15" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h2 class="success-title">Vielen Dank für Ihre Anfrage!</h2>
+      <p class="success-text">Wir haben Ihre Bedarfsanalyse erhalten und melden uns in Kürze bei Ihnen.</p>
+    </div>
+  </div>
+
+  <form id="bedarfsForm" name="bedarfsanalyse" data-netlify="true" netlify-honeypot="bot-field">
+    <input type="hidden" name="form-name" value="bedarfsanalyse">
+    <p hidden><input name="bot-field"></p>
+
+    <!-- ══ 1. Schule & Kontakt ══ -->
+    <div class="form-section">
+      <div class="deco"></div>
+      <div class="sec-head"><div class="sec-num">1</div><div class="sec-title">Schule & Kontakt</div></div>
+
+      <div class="field">
+        <label class="field-label">Name der Schule<span class="req">*</span></label>
+        <input type="text" name="schule" required placeholder="z. B. Gesamtschule Musterstadt">
+      </div>
+      <div class="field">
+        <label class="field-label">Adresse <span class="opt">(optional)</span></label>
+        <input type="text" name="adresse" placeholder="Straße, Hausnummer">
+      </div>
+      <div class="field">
+        <label class="field-label">Stadt / Ort<span class="req">*</span></label>
+        <input type="text" name="stadt" required placeholder="z. B. Köln">
+      </div>
+      <div class="hr"></div>
+      <div class="field">
+        <label class="field-label">Ansprechperson<span class="req">*</span></label>
+        <input type="text" name="ansprechpartner" required placeholder="Vor- und Nachname">
+      </div>
+      <div class="field">
+        <label class="field-label">Funktion</label>
+        <select name="ansprechpartnerFunktion">
+          <option value="">Bitte wählen …</option>
+          <option>Schulleitung</option>
+          <option>Stellvertretende Schulleitung</option>
+          <option>Didaktische Leitung</option>
+          <option>Fortbildungsbeauftragte*r</option>
+          <option>Steuergruppenmitglied</option>
+          <option>Lehrkraft</option>
+          <option>Sonstiges</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="field-label">E-Mail<span class="req">*</span></label>
+        <input type="email" name="email" required placeholder="ihre@schule.de">
+      </div>
+      <div class="field">
+        <label class="field-label">Telefon <span class="opt">(optional)</span></label>
+        <input type="tel" name="telefon" placeholder="+49 ...">
+      </div>
+    </div>
+
+    <!-- ══ 2. Thema & Schwerpunkte ══ -->
+    <div class="form-section">
+      <div class="deco"></div>
+      <div class="sec-head"><div class="sec-num">2</div><div class="sec-title">Thema & Schwerpunkte</div></div>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:16px;">Wählen Sie das Thema, das Ihrer Schule am wichtigsten ist.<span class="req">*</span></p>
+
+      <input type="hidden" name="thema" id="themaHidden">
+
+      <div class="themen-grid" id="themenGrid">
+
+        <label class="thema-card">
+          <input type="radio" name="_thema" value="teamarbeit">
+          <span class="thema-card-label">Kollegiale Zusammenarbeit & Teamentwicklung</span>
+        </label>
+        <label class="thema-card">
+          <input type="radio" name="_thema" value="lernprozesse">
+          <span class="thema-card-label">Selbstorganisierte Lernprozesse gestalten</span>
+        </label>
+        <label class="thema-card">
+          <input type="radio" name="_thema" value="lernzeit">
+          <span class="thema-card-label">Lernzeitgestaltung in Grundschule & OGS</span>
+        </label>
+        <label class="thema-card">
+          <input type="radio" name="_thema" value="digitalisierung">
+          <span class="thema-card-label">Digitalisierung</span>
+        </label>
+        <label class="thema-card">
+          <input type="radio" name="_thema" value="ki">
+          <span class="thema-card-label">Künstliche Intelligenz in der Schule</span>
+        </label>
+        <label class="thema-card">
+          <input type="radio" name="_thema" value="classroom">
+          <span class="thema-card-label">Classroom-Management</span>
+        </label>
+        <label class="thema-card">
+          <input type="radio" name="_thema" value="geschlossenheit">
+          <span class="thema-card-label">Pädagogische Geschlossenheit</span>
+        </label>
+        <label class="thema-card">
+          <input type="radio" name="_thema" value="leitbild">
+          <span class="thema-card-label">Leitbildentwicklung</span>
+        </label>
+        <label class="thema-card">
+          <input type="radio" name="_thema" value="sozialemotional">
+          <span class="thema-card-label">Sozial-emotionale Kompetenzen entwickeln</span>
+        </label>
+        <label class="thema-card">
+          <input type="radio" name="_thema" value="konzepte">
+          <span class="thema-card-label">Tragfähige Konzepte gemeinsam entwickeln</span>
+        </label>
+        <label class="thema-card">
+          <input type="radio" name="_thema" value="differenzierung">
+          <span class="thema-card-label">Differenzierung</span>
+        </label>
+        <label class="thema-card">
+          <input type="radio" name="_thema" value="erziehungskonzept">
+          <span class="thema-card-label">Erziehungskonzept gemeinsam erarbeiten</span>
+        </label>
+        <label class="thema-card">
+          <input type="radio" name="_thema" value="daten">
+          <span class="thema-card-label">Datengestützte Schulentwicklung</span>
+        </label>
+        <label class="thema-card">
+          <input type="radio" name="_thema" value="basiskompetenzen">
+          <span class="thema-card-label">Basiskompetenzen systematisch fördern</span>
+        </label>
+        <label class="thema-card">
+          <input type="radio" name="_thema" value="gewaltpraevention">
+          <span class="thema-card-label">Gewaltprävention & positives Schulklima</span>
+        </label>
+
+      </div>
+
+      <!-- Schwerpunkte – werden per JS angezeigt -->
+      <div id="schwerpunkteWrap">
+
+        <div class="schwerpunkte-box" id="sp-teamarbeit">
+          <div class="sp-title">Schwerpunkte: Kollegiale Zusammenarbeit & Teamentwicklung</div>
+          <div class="cb-grid">
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Kommunikation und Gesprächskultur im Kollegium"><span>Kommunikation und Gesprächskultur im Kollegium</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Kooperationsstrukturen und Teamrollen klären"><span>Kooperationsstrukturen und Teamrollen klären</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Gemeinsame Ziele und Visionen entwickeln"><span>Gemeinsame Ziele und Visionen entwickeln</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Feedbackkultur und kollegiale Hospitation"><span>Feedbackkultur und kollegiale Hospitation</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Konflikte konstruktiv bearbeiten"><span>Konflikte konstruktiv bearbeiten</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Von Einzelkämpfern zu einem Team werden"><span>Von Einzelkämpfern zu einem Team werden</span></label>
+          </div>
+        </div>
+
+        <div class="schwerpunkte-box" id="sp-lernprozesse">
+          <div class="sp-title">Schwerpunkte: Selbstorganisierte Lernprozesse</div>
+          <div class="cb-grid">
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Lernumgebungen aktivierend gestalten"><span>Lernumgebungen aktivierend gestalten</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Metakognition und Lernstrategien vermitteln"><span>Metakognition und Lernstrategien vermitteln</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Eigenverantwortliches Lernen stärken"><span>Eigenverantwortliches Lernen stärken</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Differenziertes Feedback geben"><span>Differenziertes Feedback geben</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Lerntagebücher und Portfolios einführen"><span>Lerntagebücher und Portfolios einführen</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Lernstandsdiagnostik anwenden"><span>Lernstandsdiagnostik anwenden</span></label>
+          </div>
+        </div>
+
+        <div class="schwerpunkte-box" id="sp-lernzeit">
+          <div class="sp-title">Schwerpunkte: Lernzeitgestaltung</div>
+          <div class="cb-grid">
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Rhythmisierung und Tagesstruktur optimieren"><span>Rhythmisierung und Tagesstruktur optimieren</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Hausaufgaben sinnvoll gestalten oder ersetzen"><span>Hausaufgaben sinnvoll gestalten oder ersetzen</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Förder- und Forderangebote konzipieren"><span>Förder- und Forderangebote konzipieren</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Kooperation Lehrkräfte und OGS-Personal stärken"><span>Kooperation Lehrkräfte und OGS-Personal stärken</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Ruhezonen und Bewegungspausen einplanen"><span>Ruhezonen und Bewegungspausen einplanen</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Übergänge zwischen Schule und OGS gestalten"><span>Übergänge zwischen Schule und OGS gestalten</span></label>
+          </div>
+        </div>
+
+        <div class="schwerpunkte-box" id="sp-digitalisierung">
+          <div class="sp-title">Schwerpunkte: Digitalisierung</div>
+          <div class="cb-grid">
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Digitale Tools und Apps im Unterricht einsetzen"><span>Digitale Tools und Apps im Unterricht einsetzen</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Medienkompetenz systematisch aufbauen"><span>Medienkompetenz systematisch aufbauen</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Datenschutz und IT-Sicherheit verstehen"><span>Datenschutz und IT-Sicherheit verstehen</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Digitale Schulentwicklung strategisch gestalten"><span>Digitale Schulentwicklung strategisch gestalten</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Digitale Kommunikation mit Eltern und Schüler*innen"><span>Digitale Kommunikation mit Eltern und Schüler*innen</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Hybrid- und Online-Unterrichtsformate entwickeln"><span>Hybrid- und Online-Unterrichtsformate entwickeln</span></label>
+          </div>
+        </div>
+
+        <div class="schwerpunkte-box" id="sp-ki">
+          <div class="sp-title">Schwerpunkte: KI in der Schule</div>
+          <div class="cb-grid">
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Grundlagen der KI für Lehrkräfte verständlich machen"><span>Grundlagen der KI für Lehrkräfte verständlich machen</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="KI-Tools im Unterricht verantwortungsvoll einsetzen"><span>KI-Tools im Unterricht verantwortungsvoll einsetzen</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Chatbots und KI-Schreibtools kritisch reflektieren"><span>Chatbots und KI-Schreibtools kritisch reflektieren</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Ethische Fragen rund um KI diskutieren"><span>Ethische Fragen rund um KI diskutieren</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="KI-Kompetenzen bei Schüler*innen entwickeln"><span>KI-Kompetenzen bei Schüler*innen entwickeln</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="KI und schulisches Prüfungswesen neu denken"><span>KI und schulisches Prüfungswesen neu denken</span></label>
+          </div>
+        </div>
+
+        <div class="schwerpunkte-box" id="sp-classroom">
+          <div class="sp-title">Schwerpunkte: Classroom-Management</div>
+          <div class="cb-grid">
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Klare Regeln und Routinen etablieren"><span>Klare Regeln und Routinen etablieren</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Störungen deeskalieren und präventiv handeln"><span>Störungen deeskalieren und präventiv handeln</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Motivationsstrategien gezielt einsetzen"><span>Motivationsstrategien gezielt einsetzen</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Raumgestaltung und Sitzordnung wirkungsvoll nutzen"><span>Raumgestaltung und Sitzordnung wirkungsvoll nutzen</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Übergangsmanagement zwischen Unterrichtsphasen"><span>Übergangsmanagement zwischen Unterrichtsphasen</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Beziehungsgestaltung und Autorität mit Würde"><span>Beziehungsgestaltung und Autorität mit Würde</span></label>
+          </div>
+        </div>
+
+        <div class="schwerpunkte-box" id="sp-geschlossenheit">
+          <div class="sp-title">Schwerpunkte: Pädagogische Geschlossenheit</div>
+          <div class="cb-grid">
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Gemeinsames pädagogisches Verständnis entwickeln"><span>Gemeinsames pädagogisches Verständnis entwickeln</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Verbindliche Absprachen treffen und einhalten"><span>Verbindliche Absprachen treffen und einhalten</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Konsequentes und wertschätzendes Handeln"><span>Konsequentes und wertschätzendes Handeln</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Einheitliche Elternkommunikation etablieren"><span>Einheitliche Elternkommunikation etablieren</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Vertretungskonzept und kollegiale Hospitation"><span>Vertretungskonzept und kollegiale Hospitation</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Schulordnung gemeinsam weiterentwickeln"><span>Schulordnung gemeinsam weiterentwickeln</span></label>
+          </div>
+        </div>
+
+        <div class="schwerpunkte-box" id="sp-leitbild">
+          <div class="sp-title">Schwerpunkte: Leitbildentwicklung</div>
+          <div class="cb-grid">
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Werte, Vision und Mission formulieren"><span>Werte, Vision und Mission formulieren</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Partizipativen Entwicklungsprozess gestalten"><span>Partizipativen Entwicklungsprozess gestalten</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Leitbild intern und extern kommunizieren"><span>Leitbild intern und extern kommunizieren</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Leitbild im Schulalltag verankern"><span>Leitbild im Schulalltag verankern</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Regelmäßige Evaluation und Weiterentwicklung"><span>Regelmäßige Evaluation und Weiterentwicklung</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Alle Stakeholder einbeziehen"><span>Alle Stakeholder einbeziehen</span></label>
+          </div>
+        </div>
+
+        <div class="schwerpunkte-box" id="sp-sozialemotional">
+          <div class="sp-title">Schwerpunkte: Sozial-emotionale Kompetenzen</div>
+          <div class="cb-grid">
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Selbstwahrnehmung und Emotionsregulation stärken"><span>Selbstwahrnehmung und Emotionsregulation stärken</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Empathie und Perspektivwechsel fördern"><span>Empathie und Perspektivwechsel fördern</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Soziales Miteinander aktiv gestalten"><span>Soziales Miteinander aktiv gestalten</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Konfliktlösestrategien vermitteln"><span>Konfliktlösestrategien vermitteln</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Resilienz und Stressbewältigung aufbauen"><span>Resilienz und Stressbewältigung aufbauen</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="SEL-Programme einführen und implementieren"><span>SEL-Programme einführen und implementieren</span></label>
+          </div>
+        </div>
+
+        <div class="schwerpunkte-box" id="sp-konzepte">
+          <div class="sp-title">Schwerpunkte: Tragfähige Konzepte entwickeln</div>
+          <div class="cb-grid">
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Bestandsaufnahme und Situationsanalyse"><span>Bestandsaufnahme und Situationsanalyse</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Ziele konkretisieren und priorisieren"><span>Ziele konkretisieren und priorisieren</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Maßnahmen ableiten und Verantwortung klären"><span>Maßnahmen ableiten und Verantwortung klären</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Realistischen Zeitplan entwickeln"><span>Realistischen Zeitplan entwickeln</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Evaluationskonzept erstellen"><span>Evaluationskonzept erstellen</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Nachhaltige Verankerung sichern"><span>Nachhaltige Verankerung sichern</span></label>
+          </div>
+        </div>
+
+        <div class="schwerpunkte-box" id="sp-differenzierung">
+          <div class="sp-title">Schwerpunkte: Differenzierung</div>
+          <div class="cb-grid">
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Differenzierung im Unterricht aktiv gestalten"><span>Differenzierung im Unterricht aktiv gestalten</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Differenzierte Lernprozesse systematisch fördern"><span>Differenzierte Lernprozesse systematisch fördern</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Aufgabenformate und Materialien anpassen"><span>Aufgabenformate und Materialien anpassen</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Flexible Lerngruppen bilden"><span>Flexible Lerngruppen bilden</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Sprachsensiblen Unterricht entwickeln"><span>Sprachsensiblen Unterricht entwickeln</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Universal Design for Learning (UDL) einführen"><span>Universal Design for Learning (UDL) einführen</span></label>
+          </div>
+        </div>
+
+        <div class="schwerpunkte-box" id="sp-erziehungskonzept">
+          <div class="sp-title">Schwerpunkte: Erziehungskonzept</div>
+          <div class="cb-grid">
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Erziehungsziele und Wertehaltungen formulieren"><span>Erziehungsziele und Wertehaltungen formulieren</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Grenzen, Konsequenzen und Sanktionen definieren"><span>Grenzen, Konsequenzen und Sanktionen definieren</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Elternpartnerschaft stärken"><span>Elternpartnerschaft stärken</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Übergänge und Einschulungskonzept gestalten"><span>Übergänge und Einschulungskonzept gestalten</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Schulordnung partizipativ weiterentwickeln"><span>Schulordnung partizipativ weiterentwickeln</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Beratungs- und Unterstützungsangebote aufbauen"><span>Beratungs- und Unterstützungsangebote aufbauen</span></label>
+          </div>
+        </div>
+
+        <div class="schwerpunkte-box" id="sp-daten">
+          <div class="sp-title">Schwerpunkte: Datengestützte Schulentwicklung</div>
+          <div class="cb-grid">
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Schuldaten erheben, interpretieren und nutzen"><span>Schuldaten erheben, interpretieren und nutzen</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="QA-Berichte und externe Evaluationen nutzen"><span>QA-Berichte und externe Evaluationen nutzen</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="COPSOQ und Mitarbeiterbefragungen durchführen"><span>COPSOQ und Mitarbeiterbefragungen durchführen</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Vergleichsarbeiten und Lernstandserhebungen auswerten"><span>Vergleichsarbeiten und Lernstandserhebungen auswerten</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Datenbasierte Zielvereinbarungen treffen"><span>Datenbasierte Zielvereinbarungen treffen</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Wirksamkeit von Maßnahmen evaluieren"><span>Wirksamkeit von Maßnahmen evaluieren</span></label>
+          </div>
+        </div>
+
+        <div class="schwerpunkte-box" id="sp-basiskompetenzen">
+          <div class="sp-title">Schwerpunkte: Basiskompetenzen fördern</div>
+          <div class="cb-grid">
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Lesekompetenz diagnostizieren und fördern"><span>Lesekompetenz diagnostizieren und fördern</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Mathematische Grundlagen sichern"><span>Mathematische Grundlagen sichern</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Schreibkompetenz gezielt aufbauen"><span>Schreibkompetenz gezielt aufbauen</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Sprachförderung im Fachunterricht"><span>Sprachförderung im Fachunterricht</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Systematische Lernstandsdiagnose durchführen"><span>Systematische Lernstandsdiagnose durchführen</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Individuelle Förderplanung erstellen"><span>Individuelle Förderplanung erstellen</span></label>
+          </div>
+        </div>
+
+        <div class="schwerpunkte-box" id="sp-gewaltpraevention">
+          <div class="sp-title">Schwerpunkte: Gewaltprävention & Schulklima</div>
+          <div class="cb-grid">
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Mobbing erkennen, benennen und handeln"><span>Mobbing erkennen, benennen und handeln</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Restorative Practices einführen"><span>Restorative Practices einführen</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Peer-Mediation aufbauen"><span>Peer-Mediation aufbauen</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Deeskalations- und Interventionstraining"><span>Deeskalations- und Interventionstraining</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Positives Klassenklima aktiv gestalten"><span>Positives Klassenklima aktiv gestalten</span></label>
+            <label class="cb-item"><input type="checkbox" name="schwerpunkte" value="Kooperation mit externen Fachstellen"><span>Kooperation mit externen Fachstellen</span></label>
+          </div>
+        </div>
+
+      </div><!-- /schwerpunkteWrap -->
+
+      <div class="field" style="margin-top:12px;">
+        <label class="field-label">Weiteres Thema / Sonstiges <span class="opt">(optional)</span></label>
+        <input type="text" name="schwerpunktSonstiges" placeholder="Eigene Ergänzung …">
+      </div>
+    </div>
+
+    <!-- ══ 3. Kontext ══ -->
+    <div class="form-section">
+      <div class="deco"></div>
+      <div class="sec-head"><div class="sec-num">3</div><div class="sec-title">Kontext & Hintergrund</div></div>
+
+      <div class="field">
+        <label class="field-label">Hintergrundinformationen zur Schule <span class="opt">(optional)</span></label>
+        <textarea name="hintergrundInfo" placeholder="Was sollten wir über Ihre Schule wissen? Besonderheiten, Schulform, aktuelles Schulprofil …"></textarea>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="subsec">
+        <div class="subsec-label">Anlass der Anfrage</div>
+        <div class="cb-grid">
+          <label class="cb-item"><input type="checkbox" name="anlassAnfrage" value="Vorgabe der ESL / Schulaufsicht"><span>Vorgabe der ESL / Schulaufsicht</span></label>
+          <label class="cb-item"><input type="checkbox" name="anlassAnfrage" value="Wunsch aus dem Kollegium"><span>Wunsch aus dem Kollegium</span></label>
+          <label class="cb-item"><input type="checkbox" name="anlassAnfrage" value="Auf Basis von Auswertungen (QA, COPSOQ o.ä.)"><span>Auf Basis von Auswertungen (QA, COPSOQ o.ä.)</span></label>
+          <label class="cb-item"><input type="checkbox" name="anlassAnfrage" value="Empfehlung des Schulträgers"><span>Empfehlung des Schulträgers</span></label>
+        </div>
+        <div class="field" style="margin-top:10px;">
+          <input type="text" name="anlassAnfrageSonstiges" placeholder="Sonstiger Anlass …">
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="subsec">
+        <div class="subsec-label">Zielgruppe</div>
+        <div class="cb-grid">
+          <label class="cb-item"><input type="checkbox" name="zielgruppe" value="Schulleitung"><span>Schulleitung</span></label>
+          <label class="cb-item"><input type="checkbox" name="zielgruppe" value="Steuergruppe / Schulentwicklungsteam"><span>Steuergruppe / Schulentwicklungsteam</span></label>
+          <label class="cb-item"><input type="checkbox" name="zielgruppe" value="Lehrerkollegium"><span>Lehrerkollegium</span></label>
+          <label class="cb-item"><input type="checkbox" name="zielgruppe" value="OGS-Team / pädagogische Fachkräfte im Ganztag"><span>OGS-Team / pädagogische Fachkräfte im Ganztag</span></label>
+          <label class="cb-item"><input type="checkbox" name="zielgruppe" value="Einzelne Jahrgangsteams / Fachgruppen"><span>Einzelne Jahrgangsteams / Fachgruppen</span></label>
+          <label class="cb-item"><input type="checkbox" name="zielgruppe" value="Schüler*innen"><span>Schüler*innen</span></label>
+          <label class="cb-item"><input type="checkbox" name="zielgruppe" value="Eltern"><span>Eltern</span></label>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="subsec">
+        <div class="subsec-label">Vorerfahrung zum Thema</div>
+        <div class="radio-group">
+          <label class="radio-item"><input type="radio" name="vorerfahrung" value="keine"><span>Haben wir uns noch nicht damit beschäftigt</span></label>
+          <label class="radio-item"><input type="radio" name="vorerfahrung" value="erste"><span>Es gibt erste Vorerfahrungen</span></label>
+          <label class="radio-item"><input type="radio" name="vorerfahrung" value="viel"><span>Ist schon viel implementiert / versucht worden</span></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ 4. Bedarf & Erwartungen ══ -->
+    <div class="form-section">
+      <div class="deco"></div>
+      <div class="sec-head"><div class="sec-num">4</div><div class="sec-title">Bedarf & Erwartungen</div></div>
+
+      <div class="subsec">
+        <div class="subsec-label">Dringlichkeit des Handlungsbedarfs</div>
+        <div class="urgency-grid">
+          <label class="urgency-card">
+            <input type="radio" name="handlungsbedarf" value="perspektivisch">
+            <div class="urgency-icon">🗓️</div>
+            <div class="urgency-label">Kein akuter Druck – eher perspektivisch relevant</div>
+          </label>
+          <label class="urgency-card">
+            <input type="radio" name="handlungsbedarf" value="mittelfristig">
+            <div class="urgency-icon">📈</div>
+            <div class="urgency-label">Mittelfristig relevant</div>
+          </label>
+          <label class="urgency-card">
+            <input type="radio" name="handlungsbedarf" value="deutlich">
+            <div class="urgency-icon">⚠️</div>
+            <div class="urgency-label">Aktuell deutlich spürbarer Handlungsbedarf</div>
+          </label>
+          <label class="urgency-card">
+            <input type="radio" name="handlungsbedarf" value="dringlich">
+            <div class="urgency-icon">🚨</div>
+            <div class="urgency-label">Sehr dringlich – akute Herausforderung</div>
+          </label>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="subsec">
+        <div class="subsec-label">Erwartungen an die Zusammenarbeit</div>
+        <div class="radio-group">
+          <label class="radio-item"><input type="checkbox" name="erwartungen" value="Fachberatung (neue fachliche Impulse liefern)"><span>Fachberatung (neue fachliche Impulse liefern)</span></label>
+          <label class="radio-item"><input type="checkbox" name="erwartungen" value="Prozessberatung (Maßnahmen entwickeln & zu Handlungsleitlinien überführen)"><span>Prozessberatung (Maßnahmen entwickeln & zu Handlungsleitlinien überführen)</span></label>
+          <label class="radio-item"><input type="checkbox" name="erwartungen" value="Ganzheitliche Begleitung (nachhaltige Verankerung im Schulalltag)"><span>Ganzheitliche Begleitung (nachhaltige Verankerung im Schulalltag)</span></label>
+          <label class="radio-item"><input type="checkbox" name="erwartungen" value="Mitarbeit im Operativen (Konzepte schreiben, Präsentationen, Recherche)"><span>Mitarbeit im Operativen (Konzepte schreiben, Präsentationen, Recherche)</span></label>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="subsec">
+        <div class="subsec-label">Verfügbare Ressourcen für die Umsetzung</div>
+        <div class="radio-group">
+          <label class="radio-item"><input type="radio" name="ressourcen" value="gering"><span>Gering – lediglich am Fortbildungstag selbst</span></label>
+          <label class="radio-item"><input type="radio" name="ressourcen" value="mittel"><span>Mittel – regelmäßige Steuergruppentreffen danach</span></label>
+          <label class="radio-item"><input type="radio" name="ressourcen" value="hoch"><span>Hoch – intensive Arbeit an Konzepten & Implementierung</span></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ 5. Organisation ══ -->
+    <div class="form-section">
+      <div class="deco"></div>
+      <div class="sec-head"><div class="sec-num">5</div><div class="sec-title">Organisation & Planung</div></div>
+
+      <div class="subsec">
+        <div class="subsec-label">Gewünschtes Format</div>
+        <div class="radio-group">
+          <label class="radio-item"><input type="radio" name="format" value="Ganztäger (ganzer Schultag)"><span>Ganztäger (ganzer Schultag)</span></label>
+          <label class="radio-item"><input type="radio" name="format" value="Halbtagsveranstaltung"><span>Halbtagsveranstaltung</span></label>
+          <label class="radio-item"><input type="radio" name="format" value="Workshop (ca. 2–3 Std.)"><span>Workshop (ca. 2–3 Std.)</span></label>
+          <label class="radio-item"><input type="radio" name="format" value="Mehrtägige Veranstaltung"><span>Mehrtägige Veranstaltung</span></label>
+          <label class="radio-item"><input type="radio" name="format" value="Prozessbegleitung (mehrere Termine)"><span>Prozessbegleitung (mehrere Termine)</span></label>
+          <label class="radio-item"><input type="radio" name="format" value="Online-Format"><span>Online-Format</span></label>
+          <label class="radio-item"><input type="radio" name="format" value="Hybrid (Präsenz + Online)"><span>Hybrid (Präsenz + Online)</span></label>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="field">
+        <label class="field-label">Veranstaltungsort <span class="opt">(optional)</span></label>
+        <input type="text" name="veranstaltungsort" placeholder="z. B. Schulgebäude, Tagungshaus …">
+      </div>
+      <div class="field">
+        <label class="field-label">Wunschtermin <span class="opt">(optional)</span></label>
+        <input type="text" name="wunschtermin" placeholder="z. B. März 2026, KW 12 …">
+      </div>
+      <div class="field">
+        <label class="field-label">Alternativtermin <span class="opt">(optional)</span></label>
+        <input type="text" name="alternativtermin" placeholder="z. B. April 2026 …">
+      </div>
+      <div class="field">
+        <label class="field-label">Anzahl Teilnehmende <span class="opt">(optional)</span></label>
+        <input type="number" name="teilnehmerAnzahl" placeholder="z. B. 30" min="1">
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="subsec">
+        <div class="subsec-label">Teilnehmende Gruppen</div>
+        <div class="cb-grid">
+          <label class="cb-item"><input type="checkbox" name="teilnehmerGruppen" value="Schulleitung"><span>Schulleitung</span></label>
+          <label class="cb-item"><input type="checkbox" name="teilnehmerGruppen" value="Kollegium"><span>Kollegium</span></label>
+          <label class="cb-item"><input type="checkbox" name="teilnehmerGruppen" value="Multiprofessionelle Teams"><span>Multiprofessionelle Teams</span></label>
+          <label class="cb-item"><input type="checkbox" name="teilnehmerGruppen" value="Schülervertretung"><span>Schülervertretung</span></label>
+          <label class="cb-item"><input type="checkbox" name="teilnehmerGruppen" value="Elternvertreter"><span>Elternvertreter</span></label>
+          <label class="cb-item"><input type="checkbox" name="teilnehmerGruppen" value="Nichtpädagogisches Personal"><span>Nichtpädagogisches Personal</span></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ 6. Fördermittel ══ -->
+    <div class="form-section">
+      <div class="deco"></div>
+      <div class="sec-head"><div class="sec-num">6</div><div class="sec-title">Fördermittel <span class="sec-opt">(optional)</span></div></div>
+
+      <div class="subsec">
+        <div class="subsec-label">Stehen Fördermittel zur Verfügung?</div>
+        <div class="radio-group radio-inline">
+          <label class="radio-item"><input type="radio" name="hasFoerdermittel" value="ja" id="foerderJa"><span>Ja</span></label>
+          <label class="radio-item"><input type="radio" name="hasFoerdermittel" value="nein"><span>Nein</span></label>
+          <label class="radio-item"><input type="radio" name="hasFoerdermittel" value="unklar"><span>Noch unklar</span></label>
+        </div>
+      </div>
+
+      <div class="cond" id="foerderBox">
+        <div class="hr"></div>
+        <div class="subsec">
+          <div class="subsec-label">Art der Fördermittel</div>
+          <div class="cb-grid">
+            <label class="cb-item"><input type="checkbox" name="foerdermittelArt" value="Schulbudget"><span>Schulbudget</span></label>
+            <label class="cb-item"><input type="checkbox" name="foerdermittelArt" value="Fortbildungsbudget Schulamt"><span>Fortbildungsbudget Schulamt</span></label>
+            <label class="cb-item"><input type="checkbox" name="foerdermittelArt" value="Stiftungsförderung"><span>Stiftungsförderung</span></label>
+            <label class="cb-item"><input type="checkbox" name="foerdermittelArt" value="Kommunale Förderung"><span>Kommunale Förderung</span></label>
+            <label class="cb-item"><input type="checkbox" name="foerdermittelArt" value="ESF / EU-Mittel"><span>ESF / EU-Mittel</span></label>
+            <label class="cb-item"><input type="checkbox" name="foerdermittelArt" value="Sonstiges" id="foerderSonstCb"><span>Sonstiges</span></label>
+          </div>
+        </div>
+        <div class="field" style="margin-top:10px;">
+          <label class="field-label">Stiftung / Förderprogramm <span class="opt">(falls bekannt)</span></label>
+          <input type="text" name="foerdermittelStiftung" placeholder="z. B. Bildungsstiftung XY …">
+        </div>
+        <div class="cond" id="foerderSonstBox">
+          <input type="text" name="foerdermittelSonstiges" placeholder="Sonstige Fördermittel …" style="margin-top:8px;">
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ 7. Datenschutz ══ -->
+    <div class="form-section">
+      <div class="sec-head"><div class="sec-num">7</div><div class="sec-title">Datenschutz (DSGVO)</div></div>
+      <p style="font-size:14px; color:var(--muted); line-height:1.7; margin-bottom:16px;">
+        Ihre Angaben werden ausschließlich zur Bearbeitung Ihrer Anfrage durch die ISH Gruppe verwendet.
+        Eine Weitergabe an Dritte erfolgt nicht. Sie können Ihre Einwilligung jederzeit unter <strong>office@ish-gruppe.de</strong> widerrufen.
+      </p>
+      <label class="cb-item" style="padding:14px; border:1.5px solid var(--border); border-radius:10px; background:#f9fcfd;">
+        <input type="checkbox" name="datenschutz" id="privacyCheck" required>
+        <span style="font-size:14px; line-height:1.5;">
+          Ich bin einverstanden, dass meine Angaben zur Bearbeitung meiner Anfrage gespeichert und verarbeitet werden.<span class="req">*</span>
+        </span>
+      </label>
+    </div>
+
+    <div class="err-msg" id="errMsg"></div>
+    <div class="submit-area">
+      <button type="submit" class="submit-btn" id="submitBtn">Anfrage absenden</button>
+    </div>
+
+  </form>
+</div>
+
+<script>
+  // Themen-Auswahl + Schwerpunkte
+  const themenLabels = {
+    teamarbeit:        'Kollegiale Zusammenarbeit & Teamentwicklung',
+    lernprozesse:      'Selbstorganisierte Lernprozesse gestalten',
+    lernzeit:          'Lernzeitgestaltung in Grundschule & OGS',
+    digitalisierung:   'Digitalisierung',
+    ki:                'Künstliche Intelligenz in der Schule',
+    classroom:         'Classroom-Management',
+    geschlossenheit:   'Pädagogische Geschlossenheit',
+    leitbild:          'Leitbildentwicklung',
+    sozialemotional:   'Sozial-emotionale Kompetenzen entwickeln',
+    konzepte:          'Tragfähige Konzepte gemeinsam entwickeln',
+    differenzierung:   'Differenzierung',
+    erziehungskonzept: 'Erziehungskonzept gemeinsam erarbeiten',
+    daten:             'Datengestützte Schulentwicklung',
+    basiskompetenzen:  'Basiskompetenzen systematisch fördern',
+    gewaltpraevention: 'Gewaltprävention & positives Schulklima',
+  };
+
+  document.querySelectorAll('input[name="_thema"]').forEach(r => {
+    r.addEventListener('change', () => {
+      const val = r.value;
+      document.getElementById('themaHidden').value = themenLabels[val] || val;
+      // Schwerpunkte-Boxen
+      document.querySelectorAll('.schwerpunkte-box').forEach(b => b.classList.remove('visible'));
+      const box = document.getElementById('sp-' + val);
+      if (box) box.classList.add('visible');
+      // Checkboxen anderer Themen zurücksetzen
+      document.querySelectorAll('.schwerpunkte-box input[type="checkbox"]').forEach(cb => {
+        if (!box || !box.contains(cb)) cb.checked = false;
+      });
+    });
+  });
+
+  // Fördermittel
+  document.getElementById('foerderJa').addEventListener('change', function() {
+    document.getElementById('foerderBox').classList.toggle('visible', this.checked);
+  });
+  document.querySelectorAll('input[name="hasFoerdermittel"]').forEach(r => {
+    r.addEventListener('change', () => {
+      document.getElementById('foerderBox').classList.toggle('visible', r.value === 'ja' && r.checked);
+    });
+  });
+  document.getElementById('foerderSonstCb').addEventListener('change', function() {
+    document.getElementById('foerderSonstBox').classList.toggle('visible', this.checked);
+  });
+
+  // Form Submit
+  document.getElementById('bedarfsForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn    = document.getElementById('submitBtn');
+    const errMsg = document.getElementById('errMsg');
+
+    if (!document.getElementById('privacyCheck').checked) {
+      errMsg.textContent = 'Bitte stimmen Sie der Datenschutzerklärung zu.';
+      errMsg.style.display = 'block';
+      errMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    if (!document.getElementById('themaHidden').value) {
+      errMsg.textContent = 'Bitte wählen Sie ein Thema aus.';
+      errMsg.style.display = 'block';
+      errMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Wird gesendet …';
+    errMsg.style.display = 'none';
+
+    const form = e.target;
+    const params = new URLSearchParams();
+    params.append('form-name', 'bedarfsanalyse');
+
+    form.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], input[type="number"], input[type="hidden"], textarea').forEach(el => {
+      if (el.name && el.name !== 'bot-field') params.append(el.name, el.value);
+    });
+    form.querySelectorAll('select').forEach(el => {
+      if (el.name && el.value) params.append(el.name, el.value);
+    });
+    form.querySelectorAll('input[type="radio"]:checked').forEach(el => {
+      if (el.name !== '_thema') params.append(el.name, el.value);
+    });
+    form.querySelectorAll('input[type="checkbox"]').forEach(el => {
+      if (!el.name || el.name === 'datenschutz' || el.name === 'bot-field') return;
+      if (el.checked) params.append(el.name, el.value);
+    });
+
+    try {
+      const res = await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params.toString()
+      });
+      if (!res.ok) throw new Error('Server error');
+      document.getElementById('bedarfsForm').style.display = 'none';
+      document.getElementById('successWrap').style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch {
+      errMsg.textContent = 'Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut oder schreiben Sie uns an office@ish-gruppe.de';
+      errMsg.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Anfrage absenden';
+    }
+  });
+</script>
+</body>
+</html>

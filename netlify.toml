@@ -1,0 +1,12 @@
+[build]
+  publish = "."
+
+[[redirects]]
+  from = "/trainer"
+  to   = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/bedarfsanalyse"
+  to   = "/bedarfsanalyse.html"
+  status = 200
