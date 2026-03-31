@@ -184,9 +184,9 @@
     </div>
   </div>
 
-  <form id="trainerForm">
-    <input type="hidden" name="access_key" value="1ec118d3-2acd-433d-92fe-7bd921f58f37">
-    <input type="hidden" name="subject" value="Neue Trainer-Bewerbung – ISH Gruppe">
+  <form id="trainerForm" name="trainer-bewerbung" data-netlify="true" netlify-honeypot="bot-field">
+    <input type="hidden" name="form-name" value="trainer-bewerbung">
+    <p hidden><input name="bot-field"></p>
 
     <!-- ══ 1. Persönliche Angaben ══ -->
     <div class="form-section">
@@ -674,32 +674,29 @@
     errMsg.style.display = 'none';
 
     const form = e.target;
-    const data = {};
+    const params = new URLSearchParams();
+    params.append('form-name', 'trainer-bewerbung');
 
-    form.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], input[type="url"], input[type="hidden"], textarea').forEach(el => {
-      if (el.name) data[el.name] = el.value;
+    form.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], input[type="url"], textarea').forEach(el => {
+      if (el.name && el.name !== 'bot-field') params.append(el.name, el.value);
     });
 
     form.querySelectorAll('input[type="radio"]:checked').forEach(el => {
-      data[el.name] = el.value;
+      params.append(el.name, el.value);
     });
 
-    const cbFields = {};
     form.querySelectorAll('input[type="checkbox"]').forEach(el => {
-      if (!el.name || el.name === 'privacy') return;
-      if (!cbFields[el.name]) cbFields[el.name] = [];
-      if (el.checked) cbFields[el.name].push(el.value);
+      if (!el.name || el.name === 'privacy' || el.name === 'bot-field') return;
+      if (el.checked) params.append(el.name, el.value);
     });
-    Object.assign(data, cbFields);
 
     try {
-      const res  = await fetch('https://api.web3forms.com/submit', {
+      const res = await fetch('/', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify(data)
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params.toString()
       });
-      const json = await res.json();
-      if (!json.success) throw new Error(json.message);
+      if (!res.ok) throw new Error('Server error');
       document.getElementById('trainerForm').style.display = 'none';
       document.getElementById('successWrap').style.display = 'block';
       window.scrollTo({ top: 0, behavior: 'smooth' });
